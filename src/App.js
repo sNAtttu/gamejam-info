@@ -1,24 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Rasmus, you can do it!</h1>
+      <h2>Schedule</h2>
+      <div>
+        <h3>Friday</h3>
+        <p>17.00: Start</p>
+        <h3>Saturday</h3>
+        <p>12.00: Coffee</p>
+        <p>18.00: Coffee</p>
+        <h3>Sunday</h3>
+        <p>13.00: Judgement</p>
+      </div>
+      <h2>Theme: Overly Social</h2>
+      <h2>Extra Points:</h2>
+      <p>Multiplayer</p>
+      <p>Teaser</p>
     </div>
   );
 }

@@ -5,9 +5,32 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: auto;
+  width: 50%;
+}
+
+body::after {
+  background:  url("retro.jpg");
+  content: "";
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-attachment: absolute;
+  background-position: top;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+.clock {
+  font-size: 120px;
+  margin: center;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+

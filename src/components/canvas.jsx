@@ -1,8 +1,29 @@
 import React, { useRef, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { isEqual, sortBy } from 'lodash'
+
+import { getPlayersSelector, getWheelSpin } from "../redux/playerSelector"
+import { fetchPlayers } from "../redux/playerSlice"
 
 const Canvas = props => {
 
 
+
+    const equalityFunction = (left, right) => {
+        return left === undefined || isEqual(sortBy(left), sortBy(right)) || left.length === 0;
+    }
+
+    const players = useSelector(getPlayersSelector, equalityFunction);
+    const goingToBeStopped = useSelector(getWheelSpin);
+    let isStopped = false;
+    if (goingToBeStopped === true) {
+        setTimeout(function () {
+            isStopped = true;
+        }.bind(this, isStopped), (Math.random() * 5000) + 5000)
+    }
+
+
+    const dispatch = useDispatch();
     const drawArrow = (context) => {
         context.lineWidth = 1;
         context.fillStyle = "#565C98";
@@ -24,7 +45,6 @@ const Canvas = props => {
         }, [0]);
 
         const segmentDeg = parseInt(360 / totalWeight)
-
 
         //Find the highest
         const highestContender = slices.reduce((a, b) => a.weight > b.weight ? a : b);
@@ -72,27 +92,30 @@ const Canvas = props => {
     }
 
     var color = ['#A6A2DC', ' #7473BD', '#565C98'];
-    let slices = [
-        { name: 'Tatu', weight: 2, sliceDeg: 45 },
-        { name: 'Santeri', weight: 2, sliceDeg: 45 },
-        { name: 'Rasmus', weight: 1, sliceDeg: 45 },
-        { name: 'Matti', weight: 2, sliceDeg: 45 },
-        { name: 'Teppo', weight: 2, sliceDeg: 45 },
-        { name: 'Veeti', weight: 10, sliceDeg: 45 },
-    ]
 
+    function pickColor(index) {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+    let slices = undefined;
+    if (players === undefined || players.length === 0) {
+        slices = [{ name: "No contestants found", weight: 1, sliceDeg: 45, color: pickColor(0) }];
+    } else {
+        slices = players.map(e => {
+            return { name: e.name, weight: e.points, sliceDeg: 45, color: pickColor(0) }
+        }).filter(e => e.weight !== 0);
+    }
+
+    console.log(slices)
     slices = calcSliceDeg(slices);
-    var deg = rand(0, 360);
+    var deg = rand(180, 360);
     var speed = 0;
     var slowDownRand = 0;
     var completed = false;
     //var ctx = canvas.getContext('2d');
     var width = 500; // size
     var center = width / 2 + 50;      // center
-    var isStopped = false;
-    setTimeout(function () {
-        isStopped = true;
-    }.bind(this, isStopped), 10000)
+
     var lock = false;
 
     const canvasRef = useRef(null)
@@ -127,15 +150,13 @@ const Canvas = props => {
         function drawImg() {
             ctx.clearRect(0, 0, width, width);
             for (var i = 0; i < slices.length; i++) {
-                drawSlice(deg, pickColor(i), slices[i].sliceDeg);
+                drawSlice(deg, slices[i].color, slices[i].sliceDeg);
                 drawText(deg + slices[i].sliceDeg / 2, slices[i].name);
                 deg += slices[i].sliceDeg;
             }
         }
 
-        function pickColor(index) {
-            return getColor(index)[(index % color.length)];
-        }
+
 
         function resolveWinner(endDeg) {
             let currentDeg = 0;
@@ -169,6 +190,7 @@ const Canvas = props => {
 
                 return console.log("You got:\n" + winner.name); // Get Array Item from end Degree
             }
+
 
             drawImg();
             drawArrow(ctx);
@@ -216,7 +238,9 @@ const Canvas = props => {
         let animationFrameId
         const render = () => {
             frameCount++
+            predraw(context, canvas)
             draw(context, frameCount)
+            postdraw(context, 0)
             window.requestAnimationFrame(render);
         }
         render()
@@ -225,6 +249,13 @@ const Canvas = props => {
         }
     }, [draw])
 
+
+    useEffect(() => {
+        dispatch(fetchPlayers({ challengeId: 70 }))
+        /*setInterval(function () {
+            dispatch(fetchPlayers({ challengeId: 70 }))
+        }.bind(this, dispatch, fetchPlayers), 2000)*/
+    }, [])
 
     return <canvas width={1000} height={600} ref={canvasRef} {...props} />
 }

@@ -1,28 +1,45 @@
 import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { getPlayersLoadingSelector } from '../redux/playerSelector';
+import { fetchPlayers, toggleSpin } from "../redux/playerSlice"
+import { Button } from 'react-bootstrap';
 
-const AddChallengers = props => {
+const GetChallengers = () => {
 
 
 
+    const dispatch = useDispatch();
+    const [id, setId] = useState();
+    const loadingStatus = useSelector(getPlayersLoadingSelector);
+    const fetchDisabled = loadingStatus === "pending";
+    const [spinBtn, setSpinBtn] = useState(false);
 
-    const [name, setName] = useState();
-    const [weight, setWeight] = useState();
-
-    const submitContestant = () => {
-
+    const fetchChallenge = () => {
+        dispatch(fetchPlayers({ challengeId: id }))
     }
 
-    return <div></div>
-    /*
+    const toggleSpinParam = () => {
+        dispatch(toggleSpin(true))
+        setSpinBtn(true)
+    }
+
+
     return (
         <>
-            <input type="number" onChange={e => setWeight(e.target.value)}></input>
-            <input type="text" onChange={e => setName(e.target.value)}></input>
-            <input type="button" onClick={e => submitContestant}></input>
+
+            <div className="column">
+                <label>FETCH</label>
+                <input type="number" onChange={e => setId(e.target.value)}></input>
+                <Button type="button" disabled={fetchDisabled} name="FETCH" onClick={fetchChallenge}>Update</Button>
+                <Button type="button" disabled={spinBtn} name="SPIN" onClick={toggleSpinParam}>Stop</Button>
+            </div>
+
+
+
         </>
-    )*/
+    )
 
 
 }
 
-export default AddChallengers;
+export default GetChallengers;

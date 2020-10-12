@@ -6,17 +6,28 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-
+import store from "./redux/store"
+import { Provider } from 'react-redux'
 import Moment from 'react-moment';
 
 
 Moment.startPooledTimer(1000);
 // Set the output format for every react-moment instance.
 
+const AppWrapper = () => {
+
+
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+}
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AppWrapper></AppWrapper>
   </React.StrictMode>,
   document.getElementById('root')
 );

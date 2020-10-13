@@ -7,19 +7,26 @@ import { getPlayersSelector, getWheelSpin } from "../redux/playerSelector"
 const Canvas = props => {
 
 
-
-    const equalityFunction = (left, right) => {
-        return left === undefined || isEqual(sortBy(left), sortBy(right)) || left.length === 0;
-    }
-
-    const players = useSelector(getPlayersSelector, equalityFunction);
-    const goingToBeStopped = useSelector(getWheelSpin);
     let isStopped = false;
+    const goingToBeStopped = useSelector(getWheelSpin);
     if (goingToBeStopped === true) {
         setTimeout(function () {
             isStopped = true;
         }.bind(this, isStopped), (Math.random() * 5000) + 5000)
     }
+    const equalityFunction = (left, right) => {
+        return left === undefined || left.length === 0 || isEqual(sortBy(left), sortBy(right));
+    }
+
+    console.log("rerender")
+    const players = useSelector(getPlayersSelector, equalityFunction);
+
+
+
+
+
+
+
 
     const drawArrow = (context) => {
         context.lineWidth = 1;
@@ -44,16 +51,17 @@ const Canvas = props => {
 
         //Create relative percentage for every contestant
         slices.map((slice) => {
+
             slice.sliceDeg = Math.floor((slice.weight / totalWeight) * 360)
             return slice
         });
 
         //Find the highest
         const highestContender = slices.reduce((a, b) => a.weight > b.weight ? a : b);
+
         //Find if there are others
         let allHighestContenders = []
         for (let slice of slices) {
-
             if (slice.weight === highestContender.weight) {
                 allHighestContenders.push(slice)
             }
@@ -93,16 +101,25 @@ const Canvas = props => {
         return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
 
+    let textAlign = "center";
     let slices = undefined;
     if (players === undefined || players.length === 0) {
         slices = [{ name: "No contestants found", weight: 1, sliceDeg: 45, color: pickColor(0), percentage: 0 }];
+        textAlign = "right"
     } else {
         slices = players.map(e => {
             return { name: e.name, weight: e.points, sliceDeg: 45, color: pickColor(0), percentage: 0 }
         }).filter(e => e.weight !== 0);
-    }
 
-    slices = calcSliceDeg(slices);
+        if (slices.length === 0) {
+            slices = [{ name: "No contestants found", weight: 1, sliceDeg: 45, color: pickColor(0), percentage: 0 }];
+            textAlign = "right"
+        }
+    }
+    useEffect(() => {
+        slices = calcSliceDeg(slices);
+    }, [players]);
+
     var deg = rand(180, 360);
     var speed = 0;
     var slowDownRand = 0;
@@ -149,7 +166,7 @@ const Canvas = props => {
             ctx.save();
             ctx.translate(center, center);
             ctx.rotate(deg2rad(deg));
-            ctx.textAlign = "center";
+            ctx.textAlign = textAlign;
             ctx.fillStyle = "#fff";
             ctx.font = 'bold 30px sans-serif';
             ctx.fillText(text, 150, 10);
@@ -226,11 +243,6 @@ const Canvas = props => {
 
         return false
     }
-
-
-
-
-
 
     useEffect(() => {
         const canvas = canvasRef.current

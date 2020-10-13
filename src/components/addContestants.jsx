@@ -8,36 +8,52 @@ const GetChallengers = () => {
 
 
 
-    const dispatch = useDispatch();
-    const [id, setId] = useState();
-    const loadingStatus = useSelector(getPlayersLoadingSelector);
-    const fetchDisabled = loadingStatus === "pending";
-    const [spinBtn, setSpinBtn] = useState(false);
 
-    const fetchChallenge = () => {
-        dispatch(fetchPlayers({ challengeId: id }))
+
+
+    const InputComponent = () => {
+
+        const dispatch = useDispatch();
+
+        const loadingStatus = useSelector(getPlayersLoadingSelector);
+        const fetchDisabled = loadingStatus === "pending";
+
+
+        const fetchChallenge = () => {
+            dispatch(fetchPlayers({ challengeId: id }))
+        }
+
+        const toggleSpinParam = () => {
+            dispatch(toggleSpin(true))
+            setSpinBtn(true)
+        }
+        const [id, setId] = useState();
+        const [spinBtn, setSpinBtn] = useState(false);
+
+
+        return (
+            <>
+
+                <div className="column">
+                    <label>FETCH</label>
+                    <input type="number" onChange={e => setId(e.target.value)}></input>
+                    <Button type="button" disabled={fetchDisabled} name="FETCH" onClick={fetchChallenge}>Update</Button>
+                    <Button type="button" disabled={spinBtn} name="SPIN" onClick={toggleSpinParam}>Stop</Button>
+                </div>
+
+
+
+            </>
+        )
     }
-
-    const toggleSpinParam = () => {
-        dispatch(toggleSpin(true))
-        setSpinBtn(true)
-    }
-
 
     return (
         <>
-
-            <div className="column">
-                <label>FETCH</label>
-                <input type="number" onChange={e => setId(e.target.value)}></input>
-                <Button type="button" disabled={fetchDisabled} name="FETCH" onClick={fetchChallenge}>Update</Button>
-                <Button type="button" disabled={spinBtn} name="SPIN" onClick={toggleSpinParam}>Stop</Button>
-            </div>
-
-
-
+            <InputComponent></InputComponent>
         </>
-    )
+    );
+
+
 
 
 }

@@ -26,7 +26,7 @@ export default class ClockComponent extends React.Component {
 
     render() {
 
-        const dateInFuture = new Date('2020-10-13 21:22:00');
+        const dateInFuture = new Date('2020-10-18T12:00:00Z');
         return (
             <ReactMomentCountDown className="clock" toDate={dateInFuture} onTick={this.onCountDownTick} onCountdownEnd={this.onCountDownDone} sourceFormatMask='YYYY-MM-DD HH:mm:ss' />
         );

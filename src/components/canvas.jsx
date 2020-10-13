@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { isEqual, sortBy } from 'lodash'
 
 import { getPlayersSelector, getWheelSpin } from "../redux/playerSelector"
-import { fetchPlayers } from "../redux/playerSlice"
 
 const Canvas = props => {
 
@@ -22,8 +21,6 @@ const Canvas = props => {
         }.bind(this, isStopped), (Math.random() * 5000) + 5000)
     }
 
-
-    const dispatch = useDispatch();
     const drawArrow = (context) => {
         context.lineWidth = 1;
         context.fillStyle = "#565C98";
@@ -44,7 +41,12 @@ const Canvas = props => {
             return parseInt(a) + parseInt(b.weight)
         }, [0]);
 
-        const segmentDeg = parseInt(360 / totalWeight)
+
+        //Create relative percentage for every contestant
+        slices.map((slice) => {
+            slice.sliceDeg = Math.floor((slice.weight / totalWeight) * 360)
+            return slice
+        });
 
         //Find the highest
         const highestContender = slices.reduce((a, b) => a.weight > b.weight ? a : b);
@@ -68,17 +70,18 @@ const Canvas = props => {
         //Check if there's surplus
         let surplus = 360;
         for (let slice of slices) {
-            const toBeAdded = segmentDeg * slice.weight;
-            slice.sliceDeg = toBeAdded;
-            surplus -= toBeAdded;
+            surplus -= slice.sliceDeg;
         }
 
-        for (let slice of slices) {
-            if (slice.name === bonusContestantName) {
-                slice.sliceDeg += surplus
-                break;
+        if (surplus > 0) {
+            for (let slice of slices) {
+                if (slice.name === bonusContestantName) {
+                    slice.sliceDeg += surplus
+                    break;
+                }
             }
         }
+
         return slices;
     }
 
@@ -86,27 +89,19 @@ const Canvas = props => {
         return Math.random() * (max - min) + min;
     }
 
-    const getColor = (index) => {
-        return ['#A6A2DC', ' #7473BD', '#565C98']
-        // if slices.length % 2 === 0 
-    }
-
-    var color = ['#A6A2DC', ' #7473BD', '#565C98'];
-
     function pickColor(index) {
         return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
 
     let slices = undefined;
     if (players === undefined || players.length === 0) {
-        slices = [{ name: "No contestants found", weight: 1, sliceDeg: 45, color: pickColor(0) }];
+        slices = [{ name: "No contestants found", weight: 1, sliceDeg: 45, color: pickColor(0), percentage: 0 }];
     } else {
         slices = players.map(e => {
-            return { name: e.name, weight: e.points, sliceDeg: 45, color: pickColor(0) }
+            return { name: e.name, weight: e.points, sliceDeg: 45, color: pickColor(0), percentage: 0 }
         }).filter(e => e.weight !== 0);
     }
 
-    console.log(slices)
     slices = calcSliceDeg(slices);
     var deg = rand(180, 360);
     var speed = 0;
@@ -120,8 +115,22 @@ const Canvas = props => {
 
     const canvasRef = useRef(null)
 
-    const draw = (ctx, frameCount) => {
+    const draw = (ctx, frameCount, canvas) => {
 
+
+        const postdraw = (ctx, index) => {
+            index++
+            //ctx.restore()
+        }
+
+        const predraw = (context, canvas) => {
+            context.save()
+            resizeCanvasToDisplaySize(canvas)
+            const { width, height } = context.canvas
+            context.clearRect(0, 0, width, height)
+        }
+
+        predraw(ctx, canvas);
 
         function deg2rad(deg) {
             return deg * Math.PI / 180;
@@ -198,8 +207,11 @@ const Canvas = props => {
         };
 
         anim();
-
+        postdraw(ctx, 0);
     }
+
+
+
 
     const resizeCanvasToDisplaySize = (canvas) => {
 
@@ -216,17 +228,6 @@ const Canvas = props => {
     }
 
 
-    const postdraw = (ctx, index) => {
-        index++
-        ctx.restore()
-    }
-
-    const predraw = (context, canvas) => {
-        context.save()
-        resizeCanvasToDisplaySize(canvas)
-        const { width, height } = context.canvas
-        context.clearRect(0, 0, width, height)
-    }
 
 
 
@@ -238,9 +239,7 @@ const Canvas = props => {
         let animationFrameId
         const render = () => {
             frameCount++
-            predraw(context, canvas)
-            draw(context, frameCount)
-            postdraw(context, 0)
+            draw(context, frameCount, canvas)
             window.requestAnimationFrame(render);
         }
         render()
@@ -248,15 +247,6 @@ const Canvas = props => {
             window.cancelAnimationFrame(animationFrameId)
         }
     }, [draw])
-
-
-    useEffect(() => {
-        dispatch(fetchPlayers({ challengeId: 70 }))
-        /*setInterval(function () {
-            dispatch(fetchPlayers({ challengeId: 70 }))
-        }.bind(this, dispatch, fetchPlayers), 2000)*/
-    }, [])
-
     return <canvas width={1000} height={600} ref={canvasRef} {...props} />
 }
 

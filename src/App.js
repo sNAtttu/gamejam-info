@@ -6,10 +6,11 @@ import AddChallengers from './components/addContestants'
 function App() {
   return (
     <div className="App">
-      <div className="ContentBox">
-        <h1><ClockComponent></ClockComponent></h1>
+      <div className="contentBox">
+        <h1><ClockComponent className ="clock"></ClockComponent></h1>
         <Canvas></Canvas>
         <AddChallengers></AddChallengers>
+        <div className="schedule">
         <h1>Remote Game Jam 2020</h1>
         <h2>Schedule</h2>
         <div>
@@ -25,6 +26,8 @@ function App() {
         <h2>Extra Points:</h2>
         <p>Multiplayer</p>
         <p>Teaser</p>
+        </div>
+        
       </div>
 
     </div>

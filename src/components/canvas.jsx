@@ -21,25 +21,18 @@ const Canvas = props => {
     console.log("rerender")
     const players = useSelector(getPlayersSelector, equalityFunction);
 
-
-
-
-
-
-
-
     const drawArrow = (context) => {
         context.lineWidth = 1;
         context.fillStyle = "#565C98";
         context.beginPath();
-        context.moveTo(300 - 10, 20 - (3 + 5));
-        context.lineTo(300 + 10, 20 - (3 + 5));
-        context.lineTo(300 + 10, 20 - (3 - 15));
-        context.lineTo(300 + 20, 20 - (3 - 15));
-        context.lineTo(300 + 0, 20 - (3 - 33));
-        context.lineTo(300 - 20, 20 - (3 - 15));
-        context.lineTo(300 - 10, 20 - (3 - 15));
-        context.lineTo(300 - 10, 20 - (3 + 5));
+        context.moveTo(350 - 10, 40 - (3 + 5));
+        context.lineTo(350 + 10, 40- (3 + 5));
+        context.lineTo(350 + 10, 40 - (3 - 15));
+        context.lineTo(350 + 20, 40 - (3 - 15));
+        context.lineTo(350 + 0, 40 - (3 - 33));
+        context.lineTo(350 - 20, 40 - (3 - 15));
+        context.lineTo(350 - 10, 40 - (3 - 15));
+        context.lineTo(350 - 10, 40 - (3 + 5));
         context.fill();
     }
 
@@ -124,7 +117,7 @@ const Canvas = props => {
     var completed = false;
     //var ctx = canvas.getContext('2d');
     var width = 500; // size
-    var center = width / 2 + 50;      // center
+    var center = width / 2 + 100;      // center
 
     var lock = false;
 

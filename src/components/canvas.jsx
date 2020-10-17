@@ -116,9 +116,7 @@ const Canvas = props => {
             textAlign = "right"
         }
     }
-    useEffect(() => {
-        slices = calcSliceDeg(slices);
-    }, [players]);
+    slices = calcSliceDeg(slices);
 
     var deg = rand(180, 360);
     var speed = 0;

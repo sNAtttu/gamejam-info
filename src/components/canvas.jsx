@@ -1,12 +1,13 @@
 import React, { useRef, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector , useDispatch} from 'react-redux'
 import { isEqual, sortBy } from 'lodash'
 
+import { fetchPlayers} from "../redux/playerSlice"
 import { getPlayersSelector, getWheelSpin } from "../redux/playerSelector"
 
 const Canvas = props => {
 
-
+    const dispatch = useDispatch();
     let isStopped = false;
     const goingToBeStopped = useSelector(getWheelSpin);
     if (goingToBeStopped === true) {
@@ -219,7 +220,9 @@ const Canvas = props => {
     }
 
 
-
+    useEffect(() => {
+        dispatch(fetchPlayers({ challengeId: 75 }))
+    }, [dispatch])
 
     const resizeCanvasToDisplaySize = (canvas) => {
 
